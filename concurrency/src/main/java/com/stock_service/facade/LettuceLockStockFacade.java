@@ -20,7 +20,6 @@ public class LettuceLockStockFacade {
 		while (!redisLockRepository.lock(key)) {
 			Thread.sleep(100);
 		}
-
 		try {
 			stockService.decrease(key, quantity);
 		} finally {
