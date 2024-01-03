@@ -155,3 +155,21 @@ public class LettuceLockStockFacade {
 - 구현이 복잡
 - 별도의 library 사용
 - 재시도가 필요한 경우 고려
+
+~~~java
+    public void decrease(Long id, Long quantity) {
+		var lock = redissonClient.getLock(id.toString());
+		try {
+			boolean available = lock.tryLock(10, 1, TimeUnit.SECONDS);
+			if (!available) {
+				System.out.println("lock get fail");
+				return;
+			}
+			stockService.decrease(id, quantity);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} finally {
+			lock.unlock();
+		}
+	}
+~~~
